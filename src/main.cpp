@@ -3,7 +3,7 @@
 #include <iostream>
 
 #define BLK_SIZE 32
-#define MAX_PRECISION_ERROR 0.01
+#define MAX_PRECISION_ERROR 1.e-6
 
 #define A_ROW 640
 #define A_COLUMN 1280
@@ -19,7 +19,7 @@ void initialize_matrix(float A[], int size)
 {
     for (int i = 0; i < size; i++)
     {
-        A[i] = (float)(rand()) / (float)(RAND_MAX);
+        A[i] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
     }
 }
 
@@ -35,7 +35,7 @@ bool check_identical(float native[], float output[], int size)
     {
         if (abs((native[i] - output[i]) / (output[i])) > MAX_PRECISION_ERROR)
         {
-            std::cout << native[i] << output[i];
+            std::cout << native[i] << ", " << output[i];
             return false;
         }
     }
@@ -79,20 +79,42 @@ int main(int argc, char **argv)
     gettimeofday(&start, NULL);
     matmul_op.naive_mat_mul(h_A, h_B, native_C);
     gettimeofday(&end, NULL);
-
     ms = interval_to_ms(&start, &end);
     std::cout << "naive_mat_mul" << ": " << ms << " ms" << std::endl;
 
     gettimeofday(&start, NULL);
     matmul_op.mat_mul_reordering(h_A, h_B, output_C);
     gettimeofday(&end, NULL);
-
     ms = interval_to_ms(&start, &end);
     std::cout << "mat_mul_reordering" << ": " << ms << " ms" << std::endl;
 
     if (!check_identical(native_C.elements, output_C.elements, C_ROW * C_COLUMN))
     {
         std::cout << "incorrect output from mat_mul_unrolling\n"
+                  << std::endl;
+    }
+
+    gettimeofday(&start, NULL);
+    matmul_op.mat_mul_tiling(h_A, h_B, output_C, BLK_SIZE);
+    gettimeofday(&end, NULL);
+    ms = interval_to_ms(&start, &end);
+    std::cout << "mat_mul_tiling" << ": " << ms << " ms" << std::endl;
+
+    if (!check_identical(native_C.elements, output_C.elements, C_ROW * C_COLUMN))
+    {
+        std::cout << "incorrect output from mat_mul_tiling\n"
+                  << std::endl;
+    }
+
+    gettimeofday(&start, NULL);
+    matmul_op.mat_mul_cuda(h_A, h_B, output_C);
+    gettimeofday(&end, NULL);
+    ms = interval_to_ms(&start, &end);
+    std::cout << "mat_mul_cuda" << ": " << ms << " ms" << std::endl;
+
+    if (!check_identical(native_C.elements, output_C.elements, C_ROW * C_COLUMN))
+    {
+        std::cout << "incorrect output from mat_mul_cuda\n"
                   << std::endl;
     }
 }
