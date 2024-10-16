@@ -37,5 +37,6 @@ namespace matmul
         void mat_mul_reordering(const Matrix &A, const Matrix &B, Matrix &C);
         void mat_mul_tiling(const Matrix &A, const Matrix &B, Matrix &C, int BLK_SIZE);
         void mat_mul_cuda(const Matrix &A, const Matrix &B, Matrix &C);
+        void mat_mul_cuda_shared(const Matrix &A, const Matrix &B, Matrix &C);
     };
 }
