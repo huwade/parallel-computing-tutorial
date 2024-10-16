@@ -20,6 +20,7 @@ set(SOURCES
     ${PROJECT_SOURCE_DIR}/src/navie_mat_mul.cpp
     ${PROJECT_SOURCE_DIR}/src/loop_tiling.cpp
     ${PROJECT_SOURCE_DIR}/src/matrixMul.cu
+    ${PROJECT_SOURCE_DIR}/src/matrixMul_share.cu
 )
 
 # Create an executable
@@ -34,6 +35,7 @@ find_package(CUDAToolkit REQUIRED)
 # Add CUDA source files
 set(CUDA_SOURCES
     ${PROJECT_SOURCE_DIR}/src/matrixMul.cu
+    ${PROJECT_SOURCE_DIR}/src/matrixMul_share.cu
 )
 
 # Include directories required by CUDA
