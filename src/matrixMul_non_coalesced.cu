@@ -7,10 +7,12 @@
 /**
  * This code is from https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#cuda-c-runtime
  * Figure 8 Matrix Multiplication without Shared Memory
+ * Linear memory is typically allocated using cudaMalloc() freed using cudaFree()
+ * Page-locked host memory is typically allocated using cudaHostAlloc() and cudaFreeHost() allocate and free
  */
 
 // width = column, height = row
-
+// A[row][col], A[y][x]
 // Forward declaration of the matrix multiplication kernel
 // Matrix multiplication kernel called by MatMul()
 __global__ void MatMulKernel(Matrix A, Matrix B, Matrix C)
@@ -21,6 +23,7 @@ __global__ void MatMulKernel(Matrix A, Matrix B, Matrix C)
     int col = blockIdx.x * blockDim.x + threadIdx.x;
     for (int k = 0; k < A.column; k++)
         Cvalue += A.elements[row * A.column + k] * B.elements[k * B.column + col];
+
     C.elements[row * C.column + col] = Cvalue;
 }
 
