@@ -1,2 +1,5 @@
 build/
 .vscode/
+parallelcomputing2021-master/
+Img/*
+src/kernels/*

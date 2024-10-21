@@ -4,7 +4,7 @@
 #define BLOCK_SIZE 32
 
 // Matrix multiplication kernel called by MatMul()
-__global__ void matrixMultiplyShared(Matrix A, Matrix B, Matrix C)
+__global__ void matrixMultiplyShared_coales(Matrix A, Matrix B, Matrix C)
 {
 
     int bx = blockIdx.x;
@@ -24,15 +24,15 @@ __global__ void matrixMultiplyShared(Matrix A, Matrix B, Matrix C)
 
     for (int m = 0; m < (A.column / BLOCK_SIZE); ++m)
     {
-        As[ty][tx] = A.elements[row * A.column + m * BLOCK_SIZE + tx];
-        Bs[ty][tx] = B.elements[(m * BLOCK_SIZE + ty) * A.column + col];
+        As[tx][ty] = A.elements[row * A.column + m * BLOCK_SIZE + tx];
+        Bs[tx][ty] = B.elements[(m * BLOCK_SIZE + ty) * A.column + col];
 
         // Synchronize to make sure the sub-matrices are loaded
         // before starting the computation
         __syncthreads();
         // Multiply Asub and Bsub together
         for (int e = 0; e < BLOCK_SIZE; ++e)
-            Cvalue += As[ty][e] * Bs[e][tx];
+            Cvalue += As[tx][e] * Bs[e][ty];
         // Synchronize to make sure that the preceding
         // computation is done before loading two new
         // sub-matrices of A and B in the next iteration
@@ -45,7 +45,7 @@ __global__ void matrixMultiplyShared(Matrix A, Matrix B, Matrix C)
 
 namespace matmul
 {
-    void MatmulOperator::mat_mul_cuda_shared(const Matrix &A, const Matrix &B, Matrix &C)
+    void MatmulOperator::mat_mul_coalescing(const Matrix &A, const Matrix &B, Matrix &C)
     {
         // Load A and B to device memory
         Matrix d_A;
@@ -62,6 +62,7 @@ namespace matmul
         cudaMalloc(&d_B.elements, size);
         cudaMemcpy(d_B.elements, B.elements, size,
                    cudaMemcpyHostToDevice);
+
         // Allocate C in device memory
         Matrix d_C;
         d_C.column = C.column;
@@ -73,7 +74,7 @@ namespace matmul
         dim3 dimBlock(BLOCK_SIZE, BLOCK_SIZE);
         dim3 dimGrid(C.column / dimBlock.x, C.row / dimBlock.y);
         std::cout << "Computing result using CUDA Kernel...\n";
-        matrixMultiplyShared<<<dimGrid, dimBlock>>>(d_A, d_B, d_C);
+        matrixMultiplyShared_coales<<<dimGrid, dimBlock>>>(d_A, d_B, d_C);
         // Read C from device memory
         cudaMemcpy(C.elements, d_C.elements, size,
                    cudaMemcpyDeviceToHost);
