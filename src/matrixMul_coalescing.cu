@@ -5,22 +5,21 @@
 #define BLOCK_SIZE 32
 
 /**
- * This code is from https://docs.nvidia.com/cuda/cuda-c-programming-guide/index.html#cuda-c-runtime
- * Figure 8 Matrix Multiplication without Shared Memory
- * Linear memory is typically allocated using cudaMalloc() freed using cudaFree()
- * Page-locked host memory is typically allocated using cudaHostAlloc() and cudaFreeHost() allocate and free
+ * Reference: Kernel 2: Global Memory Coalescing
+ * Link : https://siboehm.com/articles/22/CUDA-MMM
+ *
+ * width = column, height = row,
+ * A[row][col], A[y][x]
  */
 
-// width = column, height = row
-// A[row][col], A[y][x]
 // Forward declaration of the matrix multiplication kernel
 // Matrix multiplication kernel called by MatMul()
-__global__ void MatMulKernel(Matrix A, Matrix B, Matrix C)
+__global__ void MatMulKernelCoalescing(Matrix A, Matrix B, Matrix C)
 {
     // Each thread reads one row of A and one column of B and computes the corresponding element of C
     float Cvalue = 0;
-    int row = blockIdx.y * blockDim.y + threadIdx.y;
-    int col = blockIdx.x * blockDim.x + threadIdx.x;
+    int row = blockIdx.y * BLOCK_SIZE + (threadIdx.y % BLOCK_SIZE);
+    int col = blockIdx.x * BLOCK_SIZE + (threadIdx.x / BLOCK_SIZE);
     for (int k = 0; k < A.column; k++)
         Cvalue += A.elements[row * A.column + k] * B.elements[k * B.column + col];
 
@@ -31,7 +30,7 @@ namespace matmul
 {
     // Matrix multiplication - Host code
     // Matrix dimensions are assumed to be multiples of BLOCK_SIZE
-    void MatmulOperator::mat_mul_cuda(const Matrix &A, const Matrix &B, Matrix &C)
+    void MatmulOperator::mat_mul_coalescing(const Matrix &A, const Matrix &B, Matrix &C)
     {
 
         for (int i = 0; i < C.row; i++)
@@ -72,7 +71,7 @@ namespace matmul
         dim3 dimBlock(BLOCK_SIZE, BLOCK_SIZE);
         dim3 dimGrid(C.column / dimBlock.x, C.row / dimBlock.y);
         std::cout << "Computing result using CUDA Kernel...\n";
-        MatMulKernel<<<dimGrid, dimBlock>>>(d_A, d_B, d_C);
+        MatMulKernelCoalescing<<<dimGrid, dimBlock>>>(d_A, d_B, d_C);
 
         // Read C from device memory
         cudaMemcpy(C.elements, d_C.elements, size,

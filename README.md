@@ -1,6 +1,8 @@
 # This is just reimplement MIT course parallel-computing-tutorial
 
 Referece : <https://github.com/mit-han-lab/parallel-computing-tutorial>
+Referece : <https://siboehm.com/articles/22/CUDA-MMM>
+Referece : <https://leimao.github.io/article/CUDA-Matrix-Multiplication-Optimization/>
 
 | Method                | Time (ms) |
 |-----------------------|-----------|
@@ -11,8 +13,3 @@ Referece : <https://github.com/mit-han-lab/parallel-computing-tutorial>
 | mat_mul_cuda_shared   | 15        |
 
 ![alt text](image.png)
-
-# 21/10/2024 add reference
-
-<https://siboehm.com/articles/22/CUDA-MMM>
-<https://leimao.github.io/article/CUDA-Matrix-Multiplication-Optimization/>

@@ -21,6 +21,7 @@ set(SOURCES
     ${PROJECT_SOURCE_DIR}/src/loop_tiling.cpp
     ${PROJECT_SOURCE_DIR}/src/matrixMul.cu
     ${PROJECT_SOURCE_DIR}/src/matrixMul_share.cu
+    ${PROJECT_SOURCE_DIR}/src/matrixMul_coalescing.cu
 )
 
 # Create an executable
@@ -36,6 +37,7 @@ find_package(CUDAToolkit REQUIRED)
 set(CUDA_SOURCES
     ${PROJECT_SOURCE_DIR}/src/matrixMul.cu
     ${PROJECT_SOURCE_DIR}/src/matrixMul_share.cu
+    ${PROJECT_SOURCE_DIR}/src/matrixMul_coalescing.cu
 )
 
 # Include directories required by CUDA

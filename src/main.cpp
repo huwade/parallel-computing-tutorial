@@ -129,4 +129,16 @@ int main(int argc, char **argv)
         std::cout << "incorrect output from mat_mul_cuda_shared\n"
                   << std::endl;
     }
+
+    gettimeofday(&start, NULL);
+    matmul_op.mat_mul_coalescing(h_A, h_B, output_C);
+    gettimeofday(&end, NULL);
+    ms = interval_to_ms(&start, &end);
+    std::cout << "mat_mul_coalescing" << ": " << ms << " ms" << std::endl;
+
+    if (!check_identical(native_C.elements, output_C.elements, C_ROW * C_COLUMN))
+    {
+        std::cout << "incorrect output from mat_mul_coalescing\n"
+                  << std::endl;
+    }
 }
