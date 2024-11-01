@@ -4,6 +4,7 @@
 
 #define BLK_SIZE 32
 #define MAX_PRECISION_ERROR 1.e-6
+#define MAX_PRECISION_ERROR 1.e-6
 
 #define A_ROW 640
 #define A_COLUMN 1280
@@ -19,6 +20,7 @@ void initialize_matrix(float A[], int size)
 {
     for (int i = 0; i < size; i++)
     {
+        A[i] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
         A[i] = static_cast<float>(rand()) / static_cast<float>(RAND_MAX);
     }
 }
@@ -91,6 +93,54 @@ int main(int argc, char **argv)
     if (!check_identical(native_C.elements, output_C.elements, C_ROW * C_COLUMN))
     {
         std::cout << "incorrect output from mat_mul_unrolling\n"
+                  << std::endl;
+    }
+
+    gettimeofday(&start, NULL);
+    matmul_op.mat_mul_tiling(h_A, h_B, output_C, BLK_SIZE);
+    gettimeofday(&end, NULL);
+    ms = interval_to_ms(&start, &end);
+    std::cout << "mat_mul_tiling" << ": " << ms << " ms" << std::endl;
+
+    if (!check_identical(native_C.elements, output_C.elements, C_ROW * C_COLUMN))
+    {
+        std::cout << "incorrect output from mat_mul_tiling\n"
+                  << std::endl;
+    }
+
+    gettimeofday(&start, NULL);
+    matmul_op.mat_mul_cuda(h_A, h_B, output_C);
+    gettimeofday(&end, NULL);
+    ms = interval_to_ms(&start, &end);
+    std::cout << "mat_mul_cuda" << ": " << ms << " ms" << std::endl;
+
+    if (!check_identical(native_C.elements, output_C.elements, C_ROW * C_COLUMN))
+    {
+        std::cout << "incorrect output from mat_mul_cuda\n"
+                  << std::endl;
+    }
+
+    gettimeofday(&start, NULL);
+    matmul_op.mat_mul_cuda_shared(h_A, h_B, output_C);
+    gettimeofday(&end, NULL);
+    ms = interval_to_ms(&start, &end);
+    std::cout << "mat_mul_cuda_shared" << ": " << ms << " ms" << std::endl;
+
+    if (!check_identical(native_C.elements, output_C.elements, C_ROW * C_COLUMN))
+    {
+        std::cout << "incorrect output from mat_mul_cuda_shared\n"
+                  << std::endl;
+    }
+
+    gettimeofday(&start, NULL);
+    matmul_op.mat_mul_coalescing(h_A, h_B, output_C);
+    gettimeofday(&end, NULL);
+    ms = interval_to_ms(&start, &end);
+    std::cout << "mat_mul_coalescing" << ": " << ms << " ms" << std::endl;
+
+    if (!check_identical(native_C.elements, output_C.elements, C_ROW * C_COLUMN))
+    {
+        std::cout << "incorrect output from mat_mul_coalescing\n"
                   << std::endl;
     }
 
