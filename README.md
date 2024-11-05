@@ -1,12 +1,9 @@
 # This is a reimplementation of the MIT course 'Parallel Computing Tutorial' and an optimization of matrix multiplication
 
-## Reference : <https://github.com/mit-han-lab/parallel-computing-tutorial>
-
-## Reference : <https://siboehm.com/articles/22/CUDA-MMM>
-
-## Reference : <https://leimao.github.io/article/CUDA-Matrix-Multiplication-Optimization/>
-
-## Reference : <https://www.youtube.com/watch?v=86FAWCzIe_4>
+Reference : <https://github.com/mit-han-lab/parallel-computing-tutorial>
+Reference : <https://siboehm.com/articles/22/CUDA-MMM>
+Reference : <https://leimao.github.io/article/CUDA-Matrix-Multiplication-Optimization/>
+Reference : <https://www.youtube.com/watch?v=86FAWCzIe_4>
 
 | Method                  | Time (ms) |
 |-------------------------|-----------|
@@ -16,8 +13,6 @@
 | mat_mul_cuda            | 669       |
 | mat_mul_cuda_shared     | 15        |
 | mat_mul_cuda_coalescing | 0         |
-
-![alt text](image.png)
 
 一個thread負責一個 output matrix 的值的計算
 '''cpp
