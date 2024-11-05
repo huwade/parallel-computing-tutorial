@@ -22,6 +22,7 @@ set(SOURCES
     ${PROJECT_SOURCE_DIR}/src/matrixMul.cu
     ${PROJECT_SOURCE_DIR}/src/matrixMul_share.cu
     ${PROJECT_SOURCE_DIR}/src/matrixMul_coalescing.cu
+    ${PROJECT_SOURCE_DIR}/src/kernel_global_mem_coalesce.cu
 )
 
 # Create an executable
@@ -38,6 +39,7 @@ set(CUDA_SOURCES
     ${PROJECT_SOURCE_DIR}/src/matrixMul.cu
     ${PROJECT_SOURCE_DIR}/src/matrixMul_share.cu
     ${PROJECT_SOURCE_DIR}/src/matrixMul_coalescing.cu
+    ${PROJECT_SOURCE_DIR}/src/kernel_global_mem_coalesce.cu
 )
 
 # Include directories required by CUDA

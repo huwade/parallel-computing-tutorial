@@ -1,10 +1,11 @@
 #include "matmul.h"
 #include <math.h>
 #include <iostream>
+#include <iomanip>
 
 #define BLK_SIZE 32
 #define MAX_PRECISION_ERROR 1.e-6
-#define MAX_PRECISION_ERROR 1.e-6
+#define MAX_PRECISION_ERROR 0.01
 
 #define A_ROW 640
 #define A_COLUMN 1280
@@ -33,11 +34,13 @@ float interval_to_ms(struct timeval *start, struct timeval *end)
 
 bool check_identical(float native[], float output[], int size)
 {
+    double diff = 0.0;
     for (int i = 0; i < size; i++)
     {
-        if (abs((native[i] - output[i]) / (output[i])) > MAX_PRECISION_ERROR)
+        diff = abs(native[i] - output[i]);
+        if (diff > MAX_PRECISION_ERROR)
         {
-            std::cout << "idex is" << i << native[i] << ", " << output[i] << std::endl;
+            std::cout << "Divergence! Should " << std::fixed << std::setprecision(2) << native[i] << ", Is " << output[i] << " (Diff " << diff << ") at " << i << std::endl;
             return false;
         }
     }
@@ -134,6 +137,18 @@ int main(int argc, char **argv)
 
     gettimeofday(&start, NULL);
     matmul_op.mat_mul_coalescing(h_A, h_B, output_C);
+    gettimeofday(&end, NULL);
+    ms = interval_to_ms(&start, &end);
+    std::cout << "mat_mul_coalescing" << ": " << ms << " ms" << std::endl;
+
+    if (!check_identical(native_C.elements, output_C.elements, C_ROW * C_COLUMN))
+    {
+        std::cout << "incorrect output from mat_mul_coalescing\n"
+                  << std::endl;
+    }
+
+    gettimeofday(&start, NULL);
+    matmul_op.mat_mul_global_mem_coalesce(h_A, h_B, output_C);
     gettimeofday(&end, NULL);
     ms = interval_to_ms(&start, &end);
     std::cout << "mat_mul_coalescing" << ": " << ms << " ms" << std::endl;

@@ -9,8 +9,8 @@ __global__ void gemm_v01(size_t m, size_t n, size_t k, T alpha, T const *A,
                          size_t ldc)
 {
     // compute the row and column of C that this thread is responsible for.
-    size_t const C_col_idx{blockIdx.x * blockDim.x + threadIdx.x};
     size_t const C_row_idx{blockIdx.y * blockDim.y + threadIdx.y};
+    size_t const C_col_idx{blockIdx.x * blockDim.x + threadIdx.x};
 
     if (C_row_idx < m && C_col_idx < n)
     {

@@ -39,5 +39,6 @@ namespace matmul
         void mat_mul_cuda(const Matrix &A, const Matrix &B, Matrix &C);
         void mat_mul_cuda_shared(const Matrix &A, const Matrix &B, Matrix &C);
         void mat_mul_coalescing(const Matrix &A, const Matrix &B, Matrix &C);
+        void mat_mul_global_mem_coalesce(const Matrix &A, const Matrix &B, Matrix &C);
     };
 }
