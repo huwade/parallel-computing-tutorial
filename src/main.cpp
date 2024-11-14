@@ -4,15 +4,14 @@
 #include <iomanip>
 
 #define BLK_SIZE 32
-#define MAX_PRECISION_ERROR 1.e-6
 #define MAX_PRECISION_ERROR 0.01
 
-#define A_ROW 640
-#define A_COLUMN 1280
-#define B_ROW 1280
-#define B_COLUMN 640
-#define C_ROW 640
-#define C_COLUMN 640
+#define A_ROW 1024
+#define A_COLUMN 1024
+#define B_ROW 1024
+#define B_COLUMN 1024
+#define C_ROW 1024
+#define C_COLUMN 1024
 #define NUM_THREAD 4
 
 using namespace matmul;
@@ -136,22 +135,10 @@ int main(int argc, char **argv)
     }
 
     gettimeofday(&start, NULL);
-    matmul_op.mat_mul_coalescing(h_A, h_B, output_C);
-    gettimeofday(&end, NULL);
-    ms = interval_to_ms(&start, &end);
-    std::cout << "mat_mul_coalescing" << ": " << ms << " ms" << std::endl;
-
-    if (!check_identical(native_C.elements, output_C.elements, C_ROW * C_COLUMN))
-    {
-        std::cout << "incorrect output from mat_mul_coalescing\n"
-                  << std::endl;
-    }
-
-    gettimeofday(&start, NULL);
     matmul_op.mat_mul_global_mem_coalesce(h_A, h_B, output_C);
     gettimeofday(&end, NULL);
     ms = interval_to_ms(&start, &end);
-    std::cout << "mat_mul_coalescing" << ": " << ms << " ms" << std::endl;
+    std::cout << "mat_mul_global_mem_coalesce" << ": " << ms << " ms" << std::endl;
 
     if (!check_identical(native_C.elements, output_C.elements, C_ROW * C_COLUMN))
     {
